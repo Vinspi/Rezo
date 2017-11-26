@@ -55,8 +55,8 @@ public class MotCacheServerTCP extends MotCacheServer {
                 sb.append('_');
 
             }
-            tentative = sb.toString();
-            //bw.write("bienvenu, vous devez deviner le mot : ");
+
+
             boolean fin = false;
             do{
 
@@ -68,7 +68,7 @@ public class MotCacheServerTCP extends MotCacheServer {
                 lettres_decouvertes = sb.toString();
                 /* on attends que le client nous envoie quelques chose (donc une lettre) */
                 /* par sécurité on choisis de prendre la première lettre du flux meme si le client nous envoie une phrase ou un chiffre */
-                tentative = br.readLine();
+                tentative = br.readLine().toUpperCase();
                 if(tentative.length() > 1){
                     System.out.println("mot reçu : "+tentative);
                     /* si tentative > 1 on considère que c'est une tentative de découvrir le mot */
