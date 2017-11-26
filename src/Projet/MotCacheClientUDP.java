@@ -52,9 +52,13 @@ public class MotCacheClientUDP extends MotCacheClient {
         /* on attends un réponse du serveur pour savoir si on peux commencer à jouer */
         reponse = responseFromServer();
         System.out.println("le mot à découvrir est : "+reponse);
-
+        tentative = "";
         do{
             tentative = sc.nextLine();
+            if (tentative.isEmpty()) {
+                System.out.println("tentative null");
+                continue;
+            }
             System.out.println("vous tentez : "+tentative);
 
 

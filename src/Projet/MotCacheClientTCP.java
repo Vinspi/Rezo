@@ -43,9 +43,14 @@ public class MotCacheClientTCP extends MotCacheClient {
 
 		String tentative,reponse;
 		System.out.println(in.readLine());
-
+		reponse = "";
 		do{
 			tentative = sc.nextLine();
+			if (tentative.isEmpty()) {
+				System.out.println("tentative null");
+				continue;
+			}
+
 			System.out.println("vous tentez : "+tentative);
 
 

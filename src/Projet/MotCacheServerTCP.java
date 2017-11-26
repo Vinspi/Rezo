@@ -43,6 +43,7 @@ public class MotCacheServerTCP extends MotCacheServer {
 
             String mot_a_deviner = dictionnaire.getFromKey((int) (Math.random()*dictionnaire.getMaxKey()));
             System.out.println(mot_a_deviner);
+            this.nbEssai = 2*mot_a_deviner.length();
             /* ici on récupère les flux d'entrée et de sortie de la socket du client */
 
             BufferedReader br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
@@ -62,13 +63,22 @@ public class MotCacheServerTCP extends MotCacheServer {
 
                 /* on envoie le mot */
 
+                sb.append(" essai(s) restant(s) "+nbEssai);
+
                 bw.write(sb.toString());
                 bw.newLine();
                 bw.flush();
                 lettres_decouvertes = sb.toString();
                 /* on attends que le client nous envoie quelques chose (donc une lettre) */
-                /* par sécurité on choisis de prendre la première lettre du flux meme si le client nous envoie une phrase ou un chiffre */
-                tentative = br.readLine().toUpperCase();
+
+
+                try {
+                    /* si la tentative de lecture échoue c'est que le clinet a fermé la connection */
+                    tentative = br.readLine().toUpperCase();
+                }catch (NullPointerException e){
+                    System.out.println("Connection fermé par le client, arrêt du thread.");
+                    break;
+                }
                 if(tentative.length() > 1){
                     System.out.println("mot reçu : "+tentative);
                     /* si tentative > 1 on considère que c'est une tentative de découvrir le mot */
@@ -106,8 +116,12 @@ public class MotCacheServerTCP extends MotCacheServer {
                 }
 
                 nbEssai--;
+                if(nbEssai == 0) {
+                    bw.write("GameOver");
+                }
             }while ((nbEssai > 0) && !fin);
-
+            bw.close();
+            br.close();
             socket.close();
     }
 
@@ -117,7 +131,8 @@ public class MotCacheServerTCP extends MotCacheServer {
             MotCacheServerTCP server = new MotCacheServerTCP(5001);
             server.startServer();
 
-        }catch (IOException e){
+        }
+        catch (IOException e){
             e.printStackTrace();
         }
     }

@@ -40,7 +40,7 @@ public class MotCacheServerUDP extends MotCacheServer {
 
         String mot_a_deviner = dictionnaire.getFromKey((int) (Math.random()*dictionnaire.getMaxKey()));
         System.out.println(mot_a_deviner);
-
+        nbEssai = mot_a_deviner.length()*2;
         /* on attends un message de la part du client pour qu'il nous signale qu'il est prêt et donner son adresse */
         System.out.println("en attente de connection (port "+port+")");
         DatagramPacket packet = new DatagramPacket(new byte[2048],2048);
@@ -63,7 +63,7 @@ public class MotCacheServerUDP extends MotCacheServer {
         boolean fin = false;
         do{
             /* on envoie le mot */
-
+            sb.append(" essai(s) restant(s) "+nbEssai);
             packet2 = new DatagramPacket(sb.toString().getBytes(),sb.toString().length(),packet.getAddress(),packet.getPort());
             server.send(packet2);
 
@@ -76,7 +76,7 @@ public class MotCacheServerUDP extends MotCacheServer {
             for (int i=0;i<packet.getLength();i++){
                 sb2.append((char) packet.getData()[i]);
             }
-            tentative = sb2.toString();
+            tentative = sb2.toString().toUpperCase();
 
             if(tentative.length() > 1){
                 System.out.println("mot reçu : "+tentative);
@@ -118,6 +118,10 @@ public class MotCacheServerUDP extends MotCacheServer {
             }
 
             nbEssai--;
+            if (nbEssai == 0){
+                packet2 = new DatagramPacket(new String("GameOver").getBytes(),8,packet.getAddress(),packet.getPort());
+                server.send(packet2);
+            }
         }while ((nbEssai > 0) && !fin);
     }
 
