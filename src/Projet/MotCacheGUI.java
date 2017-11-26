@@ -23,6 +23,8 @@ public class MotCacheGUI implements ActionListener {
         panel = new JPanel();
         panel.setLayout(new CardLayout());
         myFrame = new JFrame();
+
+
         panelConnexion = new PanelConnexion();
         panelConnexion.getConnexion().addActionListener(this);
 
@@ -73,6 +75,8 @@ public class MotCacheGUI implements ActionListener {
             }
         }
     }
+
+
 
     public static void main(String[] args) {
         MotCacheGUI gui = new MotCacheGUI();
