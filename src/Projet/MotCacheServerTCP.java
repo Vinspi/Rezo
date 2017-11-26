@@ -10,7 +10,7 @@ import java.net.Socket;
 public class MotCacheServerTCP extends MotCacheServer {
 
     private ServerSocket service;
-    private Socket socket;
+    private Socket sock;
     private Dictionnaire dictionnaire;
 
 
@@ -26,15 +26,27 @@ public class MotCacheServerTCP extends MotCacheServer {
         /* ici on va attendre une connection sur la socket de service */
         /* comme on ne gere qu'un seul client on va attendre et accepter une connexion uniquement si la socket est libre */
 
-        if(socket == null) {
-            System.out.println("En attente de connexion ("+port+")");
-            socket = service.accept();
-            gereConnexion();
-        }
 
+        System.out.println("En attente de connexion ("+port+")");
+        sock = service.accept();
+        /* ici on va créer un thread qui va gérer la connection avec le client */
+        Thread t = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try{
+                    gereConnexion();
+                }catch (IOException e){
+                    e.printStackTrace();
+                }
+            }
+        });
+        t.start();
+
+        startServer();
     }
 
     public void gereConnexion() throws IOException{
+            Socket socket = sock; /* ici on créé une copie du pointeur de la socket car celle-ci est propre à chaque thread */
             System.out.println("Un client se connecte.");
             /* dans cette fonction on va gerer la connexion avec la socket du client */
             /* c'est donc ici que va se dérouler la logique du jeu */
@@ -43,7 +55,7 @@ public class MotCacheServerTCP extends MotCacheServer {
 
             String mot_a_deviner = dictionnaire.getFromKey((int) (Math.random()*dictionnaire.getMaxKey()));
             System.out.println(mot_a_deviner);
-            this.nbEssai = 2*mot_a_deviner.length();
+            int NB_ESSAI = 2*mot_a_deviner.length();
             /* ici on récupère les flux d'entrée et de sortie de la socket du client */
 
             BufferedReader br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
@@ -63,7 +75,7 @@ public class MotCacheServerTCP extends MotCacheServer {
 
                 /* on envoie le mot */
 
-                sb.append(" essai(s) restant(s) "+nbEssai);
+                sb.append(" essai(s) restant(s) "+NB_ESSAI);
 
                 bw.write(sb.toString());
                 bw.newLine();
@@ -115,11 +127,11 @@ public class MotCacheServerTCP extends MotCacheServer {
                     }
                 }
 
-                nbEssai--;
-                if(nbEssai == 0) {
+                NB_ESSAI--;
+                if(NB_ESSAI == 0) {
                     bw.write("GameOver");
                 }
-            }while ((nbEssai > 0) && !fin);
+            }while ((NB_ESSAI > 0) && !fin);
             bw.close();
             br.close();
             socket.close();
