@@ -117,7 +117,7 @@ public class MotCacheServerUDP extends MotCacheServer {
                 }
 
                 if(sb.toString().equals(mot_a_deviner)){
-                    packet2 = new DatagramPacket(new String("GG").getBytes(),2,InetAdress.getAdressByName(hostname),port);
+                    packet2 = new DatagramPacket(new String("GG").getBytes(),2,packet.getAddress(),packet.getPort());
                     server.send(packet2);
                 }
             }
