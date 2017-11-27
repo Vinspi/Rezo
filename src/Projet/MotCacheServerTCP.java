@@ -66,10 +66,9 @@ public class MotCacheServerTCP extends MotCacheServer {
             StringBuilder sb = new StringBuilder();
             for (int i=0;i<mot_a_deviner.length();i++) {
                 sb.append('_');
-
             }
 
-
+            int lettre_a_decouvrir = mot_a_deviner.length();
             boolean fin = false;
             do{
 
@@ -81,6 +80,7 @@ public class MotCacheServerTCP extends MotCacheServer {
                 bw.newLine();
                 bw.flush();
                 lettres_decouvertes = sb.toString();
+
                 /* on attends que le client nous envoie quelques chose (donc une lettre) */
 
 
@@ -112,6 +112,7 @@ public class MotCacheServerTCP extends MotCacheServer {
                     /* si tentative est juste une lettre on va voir si elle se trouve dans le mot à trouver */
                     System.out.println("lettre proposé : "+tentative);
                     sb = new StringBuilder();
+
                     for (int i=0;i<mot_a_deviner.length();i++){
                         if(!(lettres_decouvertes.charAt(i) == mot_a_deviner.charAt(i)) && (mot_a_deviner.charAt(i) == tentative.charAt(0))){
                             /* si cette lettre n'est pas déja découverte */
@@ -123,7 +124,15 @@ public class MotCacheServerTCP extends MotCacheServer {
                         }
                         else {
                             sb.append('_');
+
                         }
+                    }
+
+                    /* si toutes les lettres on été découvertes on a gagné */
+                    if(sb.toString().equals(mot_a_deviner)){
+                        bw.write("GG");
+                        bw.newLine();
+                        bw.flush();
                     }
                 }
 

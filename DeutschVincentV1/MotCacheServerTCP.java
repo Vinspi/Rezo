@@ -113,6 +113,12 @@ public class MotCacheServerTCP extends MotCacheServer {
                             sb.append('_');
                         }
                     }
+                    /* si on a decouvert toutes les lettres on a gagné */
+                    if(sb.toString().equals(mot_a_deviner)){
+                        bw.write("GG");
+                        bw.newLine();
+                        bw.flush();
+                    }
                 }
 
                 nbEssai--;
