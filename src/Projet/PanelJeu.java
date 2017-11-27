@@ -17,6 +17,10 @@ public class PanelJeu extends JPanel implements KeyListener{
     private JButton tenter;
     private MotCacheClientTCP client;
     private JLabel essai_restant;
+    private JButton retour;
+    private JPanel panel;
+    private String hostname;
+    private int port;
 
 
     private static String parseReponse(String str){
@@ -44,9 +48,19 @@ public class PanelJeu extends JPanel implements KeyListener{
         return sb.toString();
     }
 
+    public void reset(){
+        this.remove(retour);
+        this.add(panel,BorderLayout.SOUTH);
+        this.repaint();
+        connect(hostname,port);
+    }
+
     /* ce panel contiendra tous les widgets nécéssaire au jeu */
     public PanelJeu() {
 
+            this.hostname = hostname;
+            this.port = port;
+            retour = new JButton("recommencer une partie");
             essai_restant = new JLabel("");
             reponse = new JLabel("Tentative de connexion.");
             reponse.setFont(new Font(reponse.getFont().getName(), Font.BOLD,25));
@@ -63,7 +77,7 @@ public class PanelJeu extends JPanel implements KeyListener{
             panelMot.add(reponse);
             panelMot.add(Box.createVerticalGlue());
 
-            JPanel panel = new JPanel();
+            panel = new JPanel();
             panel.setLayout(new BoxLayout(panel,BoxLayout.X_AXIS));
 
 
@@ -96,9 +110,18 @@ public class PanelJeu extends JPanel implements KeyListener{
         reponse.setText(parseReponse(rep));
         essai_restant.setText(parseEssai(rep));
         tentative.setText("");
+
+        if(parseReponse(rep).equals("G G ") || parseReponse(rep).equals("G a m e O v e r ")){
+            System.out.println("fin du game !");
+            this.remove(panel);
+            this.add(retour,BorderLayout.SOUTH);
+            this.repaint();
+        }
     }
 
     public void connect(String hostname, int port){
+        this.hostname = hostname;
+        this.port = port;
 
         try {
             client = new MotCacheClientTCP(hostname,port);
@@ -118,7 +141,9 @@ public class PanelJeu extends JPanel implements KeyListener{
         return tenter;
     }
 
-
+    public JButton getRetour() {
+        return retour;
+    }
 
     @Override
     public void keyPressed(KeyEvent keyEvent) {

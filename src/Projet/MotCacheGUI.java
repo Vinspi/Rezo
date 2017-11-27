@@ -20,6 +20,7 @@ public class MotCacheGUI implements ActionListener {
 
     public MotCacheGUI() throws HeadlessException {
 
+
         panel = new JPanel();
         panel.setLayout(new CardLayout());
         myFrame = new JFrame();
@@ -39,7 +40,7 @@ public class MotCacheGUI implements ActionListener {
         panelJeu = new PanelJeu();
         panelJeu.getTenter().addActionListener(this);
         panel.add(panelJeu,"jeu");
-
+        panelJeu.getRetour().addActionListener(this);
 
 
         myFrame.add(panel);
@@ -73,6 +74,12 @@ public class MotCacheGUI implements ActionListener {
             }catch (IOException e){
                 e.printStackTrace();
             }
+        }
+        if(actionEvent.getSource().equals(panelJeu.getRetour())){
+            /* on va relancer une partie */
+
+            panelJeu.reset();
+
         }
     }
 
